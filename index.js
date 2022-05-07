@@ -63,7 +63,7 @@ async function run() {
             const result = await cursor.toArray()
             res.send(result)
         })
-
+        // my inventory api
         app.get('/myinventory', VerifyJot, async (req, res) => {
             const decodedEmail = req.decoded.email
             const email = req.query.email
