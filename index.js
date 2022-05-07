@@ -37,7 +37,7 @@ async function run() {
     try {
         await client.connect();
         const InventoryCollection = client.db("inventoryManagementDb").collection("Inventory");
-
+        // login jwt 
         app.post('/login', (req, res) => {
             const user = req.body
             var accesToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
@@ -48,7 +48,7 @@ async function run() {
         })
 
 
-
+        // 6 product show api
         app.get('/limitedInventory', async (req, res) => {
             const query = {};
             const cursor = InventoryCollection.find(query).limit(6);
@@ -114,7 +114,7 @@ async function run() {
             const result = await InventoryCollection.updateOne(filter, updateDoc, options);
             res.send(result)
         })
-        
+
     } finally {
     }
 }
