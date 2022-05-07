@@ -9,6 +9,14 @@ const res = require("express/lib/response");
 app.use(cors())
 app.use(express.json())
 
+function VerifyJot(req,res,next) {
+    const Authheader=req.headers.authorization
+    console.log(Authheader)
+}
+
+
+
+
 const uri = `mongodb+srv://inventoryManagementDb:${process.env.PASS}@cluster0.074ez.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
@@ -45,8 +53,7 @@ async function run() {
 
         app.get('/myinventory', async (req, res) => {
             const email = req.query.email
-            const Authheader=req.headers.authorization
-            console.log(Authheader)
+
             const query = { email: email };
             const cursor = InventoryCollection.find(query);
             const result = await cursor.toArray()
