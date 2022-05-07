@@ -9,12 +9,22 @@ const res = require("express/lib/response");
 app.use(cors())
 app.use(express.json())
 
-function VerifyJot(req,res,next) {
-    const AuthHeader=req.headers.authorization
-if(!AuthHeader){
-    return res.status(401).send({message:"unauthorized access"});
-}
+function VerifyJot(req, res, next) {
+    const AuthHeader = req.headers.authorization
+
+    if (!AuthHeader) {
+        return res.status(401).send({ message: "unauthorized access" });
+    }
+    const token = AuthHeader.split(' ')[1];
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
+        if (err) {
+            return res.status(403).send({message:"forbidden access"})
+        }
+        req.decoded = decoded;
+    })
+
     next()
+
 }
 
 
@@ -34,7 +44,7 @@ async function run() {
                 expiresIn: "1d"
             });
 
-            res.send({accesToken})
+            res.send({ accesToken })
         })
 
 
@@ -54,13 +64,19 @@ async function run() {
             res.send(result)
         })
 
-        app.get('/myinventory',VerifyJot, async (req, res) => {
+        app.get('/myinventory', VerifyJot, async (req, res) => {
+            const decodedEmail = req.decoded.email
             const email = req.query.email
+            if (email === decodedEmail) {
+                const query = { email: email };
+                const cursor = InventoryCollection.find(query);
+                const result = await cursor.toArray()
+                res.send(result)
+            }
+            else{
+                res.status(403).send({message:"forbidden access"})
+            }
 
-            const query = { email: email };
-            const cursor = InventoryCollection.find(query);
-            const result = await cursor.toArray()
-            res.send(result)
         })
         // one inventory base on id
         app.get('/inventory/:id', async (req, res) => {
