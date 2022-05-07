@@ -12,6 +12,7 @@ app.use(express.json())
 function VerifyJot(req,res,next) {
     const Authheader=req.headers.authorization
     console.log(Authheader)
+next()
 }
 
 
@@ -51,7 +52,7 @@ async function run() {
             res.send(result)
         })
 
-        app.get('/myinventory', async (req, res) => {
+        app.get('/myinventory',VerifyJot, async (req, res) => {
             const email = req.query.email
 
             const query = { email: email };
