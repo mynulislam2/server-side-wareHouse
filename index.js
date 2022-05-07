@@ -26,9 +26,11 @@ function VerifyJot(req, res, next) {
             return res.status(403).send({ message: "forbidden access" })
         }
         req.decoded = decoded;
+        next()
+
+
     })
 
-    next()
 
 }
 
@@ -67,7 +69,7 @@ async function run() {
         })
         // my inventory api
         app.get('/myinventory', VerifyJot, async (req, res) => {
-            const decodedEmail = req.decoded.email
+            const decodedEmail = req.decoded.email;
             const email = req.query.email
             if (email === decodedEmail) {
                 const query = { email: email };
@@ -83,7 +85,6 @@ async function run() {
         // one inventory base on id
         app.get('/inventory/:id', async (req, res) => {
             const id = req.params.id
-            console.log(id);
             const query = { _id: ObjectId(id) };
             const result = await InventoryCollection.findOne(query);
             res.send(result)
