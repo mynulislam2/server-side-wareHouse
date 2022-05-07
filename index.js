@@ -10,9 +10,11 @@ app.use(cors())
 app.use(express.json())
 
 function VerifyJot(req,res,next) {
-    const Authheader=req.headers.authorization
-    console.log(Authheader)
-next()
+    const AuthHeader=req.headers.authorization
+if(!AuthHeader){
+    return res.status(401).send({message:"unauthorized access"});
+}
+    next()
 }
 
 
