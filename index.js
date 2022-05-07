@@ -9,6 +9,9 @@ const res = require("express/lib/response");
 app.use(cors())
 app.use(express.json())
 
+// jwt verify function
+
+
 function VerifyJot(req, res, next) {
     const AuthHeader = req.headers.authorization
 
@@ -26,9 +29,6 @@ function VerifyJot(req, res, next) {
     next()
 
 }
-
-
-
 
 const uri = `mongodb+srv://inventoryManagementDb:${process.env.PASS}@cluster0.074ez.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
