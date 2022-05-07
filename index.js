@@ -1,5 +1,6 @@
 const express = require("express");
 const app = express()
+var jwt = require('jsonwebtoken');
 require('dotenv').config()
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const port = process.env.PORT || 5000;
@@ -15,6 +16,18 @@ async function run() {
     try {
         await client.connect();
         const InventoryCollection = client.db("inventoryManagementDb").collection("Inventory");
+
+        app.post('/login', (req, res) => {
+            const user = req.body
+            var accesToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
+                expiresIn: "1d"
+            });
+
+            res.send({accesToken})
+        })
+
+
+
         app.get('/limitedInventory', async (req, res) => {
             const query = {};
             const cursor = InventoryCollection.find(query).limit(6);
@@ -31,8 +44,10 @@ async function run() {
         })
 
         app.get('/myinventory', async (req, res) => {
-            const email=req.query.email
-            const query = {email:email};
+            const email = req.query.email
+            const Authheader=req.headers.authorization
+            console.log(Authheader)
+            const query = { email: email };
             const cursor = InventoryCollection.find(query);
             const result = await cursor.toArray()
             res.send(result)
@@ -45,7 +60,7 @@ async function run() {
             const result = await InventoryCollection.findOne(query);
             res.send(result)
         })
-//add invetory one
+        //add invetory one
         app.post('/addInventory', async (req, res) => {
             const data = req.body
             const result = await InventoryCollection.insertOne(data);
@@ -58,11 +73,11 @@ async function run() {
             const result = await InventoryCollection.deleteOne(query);
             res.send(result)
         })
-//   update quantity
-        app.put('/updateQuantity/:id',async(req,res)=>{
+        //   update quantity
+        app.put('/updateQuantity/:id', async (req, res) => {
             const id = req.params.id
             const data = req.body
-            const newQuantity=data.Quantity
+            const newQuantity = data.Quantity
             const filter = { _id: ObjectId(id) };
             const options = { upsert: true };
             const updateDoc = {
@@ -87,7 +102,7 @@ async function run() {
                     description: data.description,
                     Quantity: data.Quantity,
                     Supplier: data.Supplier,
-                    sold:data.sold
+                    sold: data.sold
                 },
             };
             const result = await InventoryCollection.updateOne(filter, updateDoc, options);
