@@ -18,7 +18,7 @@ function VerifyJot(req, res, next) {
     const token = AuthHeader.split(' ')[1];
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
         if (err) {
-            return res.status(403).send({message:"forbidden access"})
+            return res.status(403).send({ message: "forbidden access" })
         }
         req.decoded = decoded;
     })
@@ -73,8 +73,8 @@ async function run() {
                 const result = await cursor.toArray()
                 res.send(result)
             }
-            else{
-                res.status(403).send({message:"forbidden access"})
+            else {
+                res.status(403).send({ message: "forbidden access" })
             }
 
         })
@@ -114,25 +114,7 @@ async function run() {
             const result = await InventoryCollection.updateOne(filter, updateDoc, options);
             res.send(result)
         })
-        // update inventory base on id
-        app.put('/updateInventory/:id', async (req, res) => {
-            const id = req.params.id
-            const data = req.body
-            const filter = { _id: ObjectId(id) };
-            const options = { upsert: true };
-            const updateDoc = {
-                $set: {
-                    tittle: data.tittle,
-                    img: data.img,
-                    price: data.price,
-                    description: data.description,
-                    Quantity: data.Quantity,
-                    Supplier: data.Supplier,
-                    sold: data.sold
-                },
-            };
-            const result = await InventoryCollection.updateOne(filter, updateDoc, options);
-        })
+        
     } finally {
     }
 }
